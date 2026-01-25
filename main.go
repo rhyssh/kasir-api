@@ -2,13 +2,12 @@ package main
 
 import (
 	"encoding/json"
-	// "fmt"
-	"kasir-api/handlers"
-	"log"
+	"fmt"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
+
+	"kasir-api/handlers"
 )
 
 // Produk represents a product in the cashier system
@@ -28,10 +27,7 @@ var produk = []Produk{
 
 func main() {
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
+
 
 	// Health check
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -115,8 +111,8 @@ http.HandleFunc("/categories", func(w http.ResponseWriter, r *http.Request) {
 	})
 
 
-	log.Println("Server running on port", port)
-	http.ListenAndServe(":"+port, nil)
+	fmt.Println("Server running at http://localhost:8080")
+	http.ListenAndServe(":8080", nil)
 }
 
 func getProdukByID(w http.ResponseWriter, r *http.Request) {
