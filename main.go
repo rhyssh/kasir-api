@@ -81,6 +81,23 @@ func main() {
 	http.HandleFunc("/api/kategori", categoryHandler.HandleCategories)
 	http.HandleFunc("/api/kategori/", categoryHandler.HandleCategoryByID)
 
+
+	// transaction API
+	transactionRepo := repositories.NewTransactionRepository(db)
+	transactionService := services.NewTransactionService(transactionRepo)
+	transactionHandler := handlers.NewTransactionHandler(transactionService)
+
+	http.HandleFunc("/api/checkout", transactionHandler.HandleCheckout)
+
+	// report API
+	reportRepo := repositories.NewReportRepository(db)
+	reportHandler := handlers.NewReportHandler(reportRepo)
+
+	http.HandleFunc("/api/report/hari-ini", reportHandler.Today)
+	http.HandleFunc("/api/report", reportHandler.Report)
+
+
+
 	// =====================
 	// Run Server
 	// =====================

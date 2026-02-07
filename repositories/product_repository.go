@@ -14,15 +14,28 @@ func NewProductRepository(db *sql.DB) *ProductRepository {
 	return &ProductRepository{db: db}
 }
 
-func (repo *ProductRepository) GetAll() ([]models.Product, error) {
-	query := "SELECT id, name, price, stock FROM products"
-	rows, err := repo.db.Query(query)
+func (repo *ProductRepository) GetAll(nameFilter string) ([]models.Product, error) {
+
+	query := `
+	SELECT id, name, price, stock
+	FROM products
+	`
+
+	args := []interface{}{}
+
+	if nameFilter != "" {
+		query += " WHERE name ILIKE $1"
+		args = append(args, "%"+nameFilter+"%")
+	}
+
+	rows, err := repo.db.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	products := make([]models.Product, 0)
+	var products []models.Product
+
 	for rows.Next() {
 		var p models.Product
 		err := rows.Scan(&p.ID, &p.Name, &p.Price, &p.Stock)
@@ -34,6 +47,7 @@ func (repo *ProductRepository) GetAll() ([]models.Product, error) {
 
 	return products, nil
 }
+
 
 func (repo *ProductRepository) Create(product *models.Product) error {
 	query := "INSERT INTO products (name, price, stock) VALUES ($1, $2, $3) RETURNING id"
